@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPERADOR | ÁREA DE TREINAMENTO</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --panel-color: #0f0f0f;
+            --sidebar-color: #0a0a0a;
+            --text-primary: #ffffff;
+            --text-secondary: #666666;
+            --accent: #ffffff;
+            --danger: #ff0000;
+            --border: #1a1a1a;
+            --admin-accent: #007bff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
+
+        /* AUTH SCREENS */
+        .auth-container { display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
+        .auth-box { width: 100%; max-width: 400px; padding: 30px; border: 1px solid var(--border); background: var(--panel-color); }
+        .auth-box h1 { font-size: 1.1rem; letter-spacing: 4px; margin-bottom: 25px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
+        .input-group input, .input-group textarea { width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px; color: white; outline: none; font-size: 0.9rem; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--text-primary); }
+        .btn-primary { width: 100%; padding: 14px; background: white; color: black; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; transition: 0.3s; }
+        .btn-primary:hover { background: #ccc; }
+        .btn-link { width: 100%; background: none; border: none; color: var(--text-secondary); font-size: 0.65rem; margin-top: 12px; cursor: pointer; text-decoration: underline; }
+
+        /* MAIN LAYOUT */
+        #main-app { display: none; height: 100vh; grid-template-columns: 280px 1fr; position: relative; }
+        
+        /* MOBILE HEADER */
+        .mobile-header { display: none; background: var(--sidebar-color); border-bottom: 1px solid var(--border); padding: 15px 20px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .menu-toggle { background: none; border: 1px solid var(--border); color: white; padding: 8px 12px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* SIDEBAR */
+        .sidebar { background: var(--sidebar-color); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s ease; }
+        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); }
+        .sidebar-header h2 { font-size: 0.85rem; letter-spacing: 2px; }
+        .nav-section { padding: 15px 0; }
+        .nav-title { padding: 0 20px 8px; font-size: 0.6rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item { padding: 10px 20px; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; transition: 0.2s; text-decoration: none; }
+        .nav-item:hover { background: #111; color: white; }
+        .nav-item.active { background: #1a1a1a; color: white; border-left: 3px solid white; }
+
+        /* CONTENT AREA */
+        .content-area { overflow-y: auto; padding: 40px; display: flex; justify-content: center; }
+        .content-wrapper { width: 100%; max-width: 800px; }
+        .module-header { margin-bottom: 30px; }
+        .module-header h1 { font-size: 1.6rem; margin-bottom: 8px; }
+        .module-header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* VIDEO CONTAINER */
+        .video-container { width: 100%; aspect-ratio: 16/9; background: #000; border: 1px solid var(--border); margin-bottom: 25px; position: relative; overflow: hidden; }
+        .video-container iframe, .video-container video { width: 100%; height: 100%; border: none; }
+        .video-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); color: var(--text-secondary); font-size: 0.6rem; letter-spacing: 2px; text-align: center; padding: 20px; }
+
+        /* TEXT CONTENT */
+        .text-content { line-height: 1.7; color: #ccc; font-size: 0.95rem; margin-bottom: 35px; }
+        .text-content h3 { color: white; margin: 25px 0 12px; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+
+        /* IA BOX */
+        .ia-box { border: 1px solid #222; padding: 20px; background: #0a0a0a; margin-bottom: 25px; border-left: 4px solid #fff; }
+        .ia-box h5 { font-size: 0.7rem; color: white; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+        .ia-box p { font-size: 0.8rem; color: #888; margin-bottom: 12px; }
+        .btn-ia { display: inline-block; padding: 8px 16px; border: 1px solid white; color: white; text-decoration: none; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+        .btn-ia:hover { background: white; color: black; }
+
+        /* MISSION BOX */
+        .mission-box { border: 1px solid var(--border); padding: 25px; background: var(--panel-color); margin-top: 40px; }
+        .mission-box h4 { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .mission-status { float: right; font-size: 0.6rem; padding: 2px 6px; border: 1px solid #333; }
+        .status-done { color: #00ff00; border-color: #00ff00; }
+        .status-pending { color: #ffcc00; border-color: #ffcc00; }
+
+        /* ADMIN PANEL */
+        .admin-panel { border: 1px solid var(--admin-accent); padding: 15px; margin-bottom: 30px; background: #001122; }
+        .admin-panel h2 { font-size: 0.75rem; color: var(--admin-accent); margin-bottom: 12px; text-transform: uppercase; }
+        .sync-status { font-size: 0.55rem; color: #888; margin-top: 8px; display: block; }
+
+        /* SOCIAL LINKS */
+        .social-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 30px; }
+        .social-card { border: 1px solid var(--border); padding: 15px 10px; text-align: center; cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit; }
+        .social-card:hover { background: white; color: black; }
+        .social-card span { display: block; font-size: 0.6rem; margin-top: 8px; text-transform: uppercase; font-weight: bold; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            #main-app { grid-template-columns: 1fr; }
+            .mobile-header { display: flex; }
+            .sidebar { 
+                position: fixed; 
+                top: 60px; 
+                left: 0; 
+                width: 280px; 
+                height: calc(100vh - 60px); 
+                z-index: 90; 
+                transform: translateX(-100%); 
+            }
+            .sidebar.open { transform: translateX(0); }
+            .content-area { padding: 30px 20px; }
+            .module-header h1 { font-size: 1.4rem; }
+            .social-grid { grid-template-columns: 1fr; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- MOBILE HEADER -->
+    <div id="mobile-nav" class="mobile-header">
+        <span style="font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;">OPERADOR</span>
+        <button class="menu-toggle" onclick="toggleMenu()">Módulos</button>
+    </div>
+
+    <!-- AUTH SCREENS -->
+    <div id="auth-screens" class="auth-container">
+        <div id="login-box" class="auth-box">
+            <h1>OPERADOR_LOGIN</h1>
+            <div class="input-group">
+                <label>EMAIL_DE_ACESSO</label>
+                <input type="email" id="login-email" placeholder="operador@sistema.com">
+            </div>
+            <div class="input-group">
+                <label>CHAVE_DE_SEGURANÇA</label>
+                <input type="password" id="login-pass" placeholder="********">
+            </div>
+            <button class="btn-primary" onclick="handleLogin()">ENTRAR_NO_SISTEMA</button>
+            <button class="btn-link" onclick="toggleAuth()">SOLICITAR_ACESSO</button>
+        </div>
+
+        <div id="register-box" class="auth-box hidden">
+            <h1>NOVO_OPERADOR</h1>
+            <div class="input-group">
+                <label>NOME_COMPLETO</label>
+                <input type="text" id="reg-name">
+            </div>
+            <div class="input-group">
+                <label>EMAIL_PRINCIPAL</label>
+                <input type="email" id="reg-email">
+            </div>
+            <div class="input-group">
+                <label>DEFINIR_SENHA</label>
+                <input type="password" id="reg-pass">
+            </div>
+            <button class="btn-primary" onclick="handleRegister()">CRIAR_PERFIL_OPERACIONAL</button>
+            <button class="btn-link" onclick="toggleAuth()">VOLTAR_AO_LOGIN</button>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>OPERADOR_V1.0</h2>
+            </div>
+            
+            <div id="nav-container">
+                <!-- Navegação dinâmica aqui -->
+            </div>
+
+            <div class="nav-section" style="margin-top: auto; border-top: 1px solid var(--border);">
+                <div class="nav-title">Suporte & Comunidade</div>
+                <a href="https://chat.whatsapp.com/GpJhkYZOOJPCtE4Hgf49Wt" target="_blank" class="nav-item">WhatsApp Grupo</a>
+                <a href="https://t.me/+ltuTMXJHdm84NjUx" target="_blank" class="nav-item">Telegram Oficial</a>
+                <a href="https://www.instagram.com/operador_mode?igsh=MTczaXkzcmN3OWR4Zw==" target="_blank" class="nav-item">Instagram</a>
+                <div class="nav-item" onclick="logout()" style="color: var(--danger);">Sair do Sistema</div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-area">
+            <div class="content-wrapper">
+                <div id="admin-area" class="hidden">
+                    <div class="admin-panel">
+                        <h2>PAINEL_DE_CONTROLE_ADMIN</h2>
+                        <div class="input-group">
+                            <label>URL DO VÍDEO (YouTube, Vimeo, MP4, etc.)</label>
+                            <input type="text" id="admin-video-url" placeholder="Cole qualquer link de vídeo aqui">
+                        </div>
+                        <div class="input-group">
+                            <label>DESCRIÇÃO_DA_AULA (HTML permitido)</label>
+                            <textarea id="admin-description" rows="5"></textarea>
+                        </div>
+                        <button class="btn-primary" id="save-btn" onclick="saveAdminChanges()" style="background: var(--admin-accent); color: white;">SALVAR_E_SINCRONIZAR_GLOBAL</button>
+                        <span id="sync-msg" class="sync-status">Sincronização: Local (Configure JSONBin para Global)</span>
+                    </div>
+                </div>
+                <div id="content-display">
+                    <!-- Conteúdo dinâmico aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DE SINCRONIZAÇÃO GLOBAL (JSONBin.io)
+        const SYNC_CONFIG = {
+            enabled: true, 
+            binId: '696844cf1a35bc089580135d'.trim(), // ESTE ID PRECISA SER O DO BIN, NÃO DA CHAVE
+            apiKey: '$2a$10$3V5YrHmdsiZuTu9.0uLgqeSCOa1A8Tz/..eHooyjIDta65P4347nu'.trim()
+        };
+
+        const DEFAULT_CONTENTS = [
+            {
+                id: 0,
+                module: "Módulo 01: O Manifesto",
+                title: "Comece por Aqui",
+                subtitle: "O Manifesto do Operador",
+                youtubeId: "",
+                text: `<h3>BEM-VINDO AO AMBIENTE DE OPERAÇÃO</h3>
+                       <p>O OPERADOR não é um curso de consumo. É um sistema de prática deliberada. Aqui, a ação vem antes da explicação. Se você está procurando motivação, está no lugar errado.</p>
+                       <p>Neste módulo inicial, vamos alinhar sua mentalidade para o que está por vir. O objetivo é transformar o caos mental em execução fria.</p>`,
+                mission: { title: "MISSÃO 01: CORTE DE RUÍDO", desc: "Elimine 80% das suas referências atuais. Deixe de seguir gurus que vivem de palco.", id: "m1" }
+            },
+            {
+                id: 1,
+                module: "Módulo 01: O Manifesto",
+                title: "O Jogo Invisível",
+                subtitle: "Entendendo os Bastidores",
+                youtubeId: "",
+                text: `<h3>QUEM FAZ DINHEIRO NÃO APARECE</h3>
+                       <p>O jogo real não é sobre criar mais conteúdo, é sobre enxergar o que já está rodando, desmontar e adaptar. Gurus vendem esperança parcelada. Operadores vendem sistemas validados.</p>`,
+                mission: { title: "MISSÃO 02: MAPEAMENTO DE REFERÊNCIA", desc: "Liste 3 pessoas que você segue que ganham dinheiro FAZENDO, não ENSINANDO.", id: "m2" }
+            },
+            {
+                id: 2,
+                module: "Módulo 02: O Sistema",
+                title: "Mode Operator",
+                subtitle: "O Ritual de Execução",
+                youtubeId: "",
+                text: `<h3>AGIR SEM CLAREZA TOTAL</h3>
+                       <p>A clareza é um subproduto da ação. O Mode Operator é o estado onde você executa o que precisa ser feito, independente de como se sente.</p>`,
+                mission: { title: "MISSÃO 03: EXECUÇÃO CEGA", desc: "Escolha uma tarefa que você está procrastinando há 1 semana. Execute-a agora.", id: "m3" }
+            },
+            {
+                id: 3,
+                module: "Módulo 02: O Sistema",
+                title: "Estrutura O.P.E.R.A.D.O.R",
+                subtitle: "As 8 Fases da Operação",
+                youtubeId: "",
+                text: `<h3>O MAPA DO SISTEMA</h3>
+                       <p>1. Observação | 2. Posicionamento | 3. Execução | 4. Revisão | 5. Ajuste | 6. Desdobramento | 7. Otimização | 8. Repetição</p>`,
+                mission: { title: "MISSÃO 04: DIAGNÓSTICO", desc: "Identifique em qual das 8 fases seu negócio/projeto está travado hoje.", id: "m4" }
+            },
+            {
+                id: 4,
+                module: "Módulo 03: A Forja",
+                title: "Agentes de IA",
+                subtitle: "Confronto e Incoerência",
+                youtubeId: "",
+                text: `<h3>IA COMO ESPELHO FRIO</h3>
+                       <p>Use a Inteligência Artificial não para criar textos bonitos, mas para apontar as falhas na sua lógica de negócio. O confronto gera evolução.</p>`,
+                mission: { title: "MISSÃO 05: O CONFRONTO", desc: "Submeta sua estratégia atual a uma IA e peça para ela destruir seus argumentos.", id: "m5" }
+            },
+            {
+                id: 5,
+                module: "Módulo 03: A Forja",
+                title: "Operação Diária",
+                subtitle: "Repetição sem Recompensa",
+                youtubeId: "",
+                text: `<h3>O CALO MENTAL</h3>
+                       <p>A maestria vem da repetição do básico. Todos os dias. Sem aplausos. Sem validação externa.</p>`,
+                mission: { title: "MISSÃO 06: PROTOCOLO 24H", desc: "Cumpra seu cronograma de amanhã com 100% de fidelidade. Sem desculpas.", id: "m6" }
+            }
+        ];
+
+        let contents = JSON.parse(localStorage.getItem('op_contents')) || DEFAULT_CONTENTS;
+        let userProgress = JSON.parse(localStorage.getItem('op_progress')) || {};
+        let currentUser = null;
+        let currentLessonIndex = 0;
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        async function fetchGlobalContents() {
+            if (!SYNC_CONFIG.enabled || !SYNC_CONFIG.binId) return;
+            
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}/latest`, {
+                    headers: { 
+                        'X-Master-Key': SYNC_CONFIG.apiKey,
+                        'X-Bin-Meta': 'false' // Retorna apenas o conteúdo, ignorando metadados
+                    }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    // Verifica se o dado recebido é um array válido de aulas
+                    if (Array.isArray(data) && data.length > 0) {
+                        contents = data;
+                        localStorage.setItem('op_contents', JSON.stringify(contents));
+                        renderNavigation();
+                        loadContent(currentLessonIndex);
+                        console.log("Sincronização: Conteúdo da nuvem aplicado.");
+                    }
+                }
+            } catch (e) { 
+                console.log("Sincronização: Usando base local (Nuvem indisponível ou vazia).");
+            }
+        }
+
+        async function pushGlobalContents() {
+            if (!SYNC_CONFIG.enabled || !SYNC_CONFIG.binId) return;
+            const msg = document.getElementById('sync-msg');
+            msg.innerText = "Sincronizando com a nuvem...";
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${SYNC_CONFIG.binId}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'X-Master-Key': SYNC_CONFIG.apiKey
+                    },
+                    body: JSON.stringify(contents)
+                });
+                
+                const responseData = await res.json();
+                
+                if (res.ok) {
+                    msg.innerText = "Sincronização Global: SUCESSO";
+                    msg.style.color = "#00ff00";
+                } else {
+                    console.error("Erro JSONBin:", responseData);
+                    if (res.status === 401) {
+                        msg.innerText = "Erro 401: Master Key Inválida ou Sem Permissão.";
+                    } else if (res.status === 404) {
+                        msg.innerText = "Erro 404: Bin ID não encontrado.";
+                    } else {
+                        msg.innerText = "Erro " + res.status + ": " + (responseData.message || "Falha na conexão");
+                    }
+                    msg.style.color = "#ff0000";
+                }
+            } catch (e) { 
+                msg.innerText = "Erro de Conexão: Verifique sua internet.";
+                msg.style.color = "#ff0000";
+                console.error(e);
+            }
+        }
+
+        function toggleAuth() {
+            document.getElementById('login-box').classList.toggle('hidden');
+            document.getElementById('register-box').classList.toggle('hidden');
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            if(!name || !email || !pass) return alert("PREENCHA TODOS OS CAMPOS");
+            localStorage.setItem('op_user', JSON.stringify({name, email, pass}));
+            alert("PERFIL CRIADO.");
+            toggleAuth();
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            if(email === 'rsdluiz@outlook.com' && pass === 'Rose@1576') {
+                currentUser = { name: 'ADMIN', email: email, isAdmin: true };
+            } else {
+                const saved = JSON.parse(localStorage.getItem('op_user'));
+                if(saved && saved.email === email && saved.pass === pass) currentUser = saved;
+            }
+            if(currentUser) {
+                document.getElementById('auth-screens').style.display = 'none';
+                document.getElementById('main-app').style.display = 'grid';
+                if(window.innerWidth <= 900) document.getElementById('mobile-nav').style.display = 'flex';
+                fetchGlobalContents();
+                renderNavigation();
+                loadContent(0);
+            } else { alert("ACESSO NEGADO"); }
+        }
+
+        function renderNavigation() {
+            const container = document.getElementById('nav-container');
+            let html = '';
+            let currentModule = '';
+            contents.forEach((lesson, index) => {
+                if(lesson.module !== currentModule) {
+                    currentModule = lesson.module;
+                    html += `<div class="nav-section"><div class="nav-title">${currentModule}</div>`;
+                }
+                html += `<div class="nav-item ${index === currentLessonIndex ? 'active' : ''}" onclick="loadContent(${index})">${lesson.title}</div>`;
+                if(contents[index+1]?.module !== currentModule) html += `</div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function getPlayerHtml(url) {
+            if (!url) return `<div class="video-placeholder">SINAL_BLOQUEADO / AGUARDANDO_UPLOAD</div>`;
+            
+            url = url.trim();
+
+            // YouTube
+            const ytId = extractYoutubeId(url);
+            if (ytId && (url.includes('youtube.com') || url.includes('youtu.be') || ytId.length === 11)) {
+                return `<iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1" allowfullscreen></iframe>`;
+            }
+
+            // Vimeo
+            if (url.includes('vimeo.com')) {
+                const vimeoId = url.split('/').pop().split('?')[0];
+                return `<iframe src="https://player.vimeo.com/video/${vimeoId}" allowfullscreen></iframe>`;
+            }
+
+            // Direct Video Links (.mp4, .webm, .ogg)
+            if (url.match(/\.(mp4|webm|ogg|mov)$/i) || url.includes('drive.google.com/file/d/')) {
+                let finalUrl = url;
+                if (url.includes('drive.google.com')) {
+                    finalUrl = url.replace('/view', '/preview').replace('file/d/', 'file/d/').split('?')[0] + '/preview';
+                    return `<iframe src="${finalUrl}" allowfullscreen></iframe>`;
+                }
+                return `<video controls controlsList="nodownload"><source src="${url}" type="video/mp4">Seu navegador não suporta vídeos.</video>`;
+            }
+
+            // Fallback: Generic Iframe (for other hosting services)
+            return `<iframe src="${url}" allowfullscreen></iframe>`;
+        }
+
+        function extractYoutubeId(url) {
+            if(!url) return "";
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) return match[2];
+            return url.length === 11 ? url : null;
+        }
+
+        function loadContent(index) {
+            currentLessonIndex = index;
+            const data = contents[index];
+            renderNavigation();
+            if(window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+
+            if(currentUser.isAdmin) {
+                document.getElementById('admin-area').classList.remove('hidden');
+                document.getElementById('admin-video-url').value = data.youtubeId;
+                document.getElementById('admin-description').value = data.text;
+            }
+
+            const isDone = userProgress[data.mission.id];
+            const videoHtml = getPlayerHtml(data.youtubeId);
+
+            let html = `
+                <div class="module-header">
+                    <p>${data.subtitle}</p>
+                    <h1>${data.title}</h1>
+                </div>
+                <div class="video-container">${videoHtml}</div>
+                <div class="text-content">${data.text}</div>
+                
+                ${data.id === 4 ? `
+                <div class="ia-box">
+                    <h5>IA_MODO_OPERADOR</h5>
+                    <p>Valide sua execução e aponte incoerências.</p>
+                    <a href="https://chatgpt.com/g/g-695cf96125dc8191851b80cf451c34ce-modo-operador" target="_blank" class="btn-ia">ACESSAR_IA</a>
+                </div>` : ''}
+
+                <div class="mission-box">
+                    <span class="mission-status ${isDone ? 'status-done' : 'status-pending'}">${isDone ? 'CONCLUÍDA' : 'PENDENTE'}</span>
+                    <h4>${data.mission.title}</h4>
+                    <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 15px;">${data.mission.desc}</p>
+                    ${!isDone ? `<button class="btn-primary" onclick="completeMission('${data.mission.id}', ${index})">MARCAR COMO FEITO</button>` : '<p style="color: #00ff00; font-size: 0.65rem;">MISSÃO EXECUTADA.</p>'}
+                </div>
+
+                <div class="social-grid">
+                    <a href="https://chat.whatsapp.com/GpJhkYZOOJPCtE4Hgf49Wt" target="_blank" class="social-card"><span>WHATSAPP</span></a>
+                    <a href="https://t.me/+ltuTMXJHdm84NjUx" target="_blank" class="social-card"><span>TELEGRAM</span></a>
+                    <a href="https://www.instagram.com/operador_mode?igsh=MTczaXkzcmN3OWR4Zw==" target="_blank" class="social-card"><span>INSTAGRAM</span></a>
+                </div>
+            `;
+            document.getElementById('content-display').innerHTML = html;
+        }
+
+        async function saveAdminChanges() {
+            contents[currentLessonIndex].youtubeId = document.getElementById('admin-video-url').value;
+            contents[currentLessonIndex].text = document.getElementById('admin-description').value;
+            localStorage.setItem('op_contents', JSON.stringify(contents));
+            if (SYNC_CONFIG.enabled) await pushGlobalContents();
+            alert("SISTEMA ATUALIZADO.");
+            loadContent(currentLessonIndex);
+        }
+
+        function completeMission(id, index) {
+            userProgress[id] = true;
+            localStorage.setItem('op_progress', JSON.stringify(userProgress));
+            loadContent(index);
+        }
+
+        function logout() { location.reload(); }
+    </script>
+</body>
+</html>
